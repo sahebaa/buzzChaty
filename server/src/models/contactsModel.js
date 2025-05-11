@@ -9,15 +9,14 @@ const contactSchma= new mongoose.Schema({
     },
     email:{
         type:String,
-        required:true,
-        unique:true
+        required:true
     },
     image:{
         type:String
     }
 })
 
-const Contacts=mongoose.model(Contacts,contactSchma);
+const Contacts=mongoose.model("Contacts",contactSchma);
 
 export default Contacts;
 

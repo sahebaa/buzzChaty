@@ -63,3 +63,37 @@ const userRes = await Users.aggregate([
     userChats: { $push: "$userChats" }
   }}
 ]);
+
+--------------------------------------------------------------------------------------------------------------
+In Express (Node.js), the req (request) object represents the incoming HTTP request from the client. It contains a lot of useful information you can use to process the request.
+
+✅ Common Properties of req (Request Object)
+✅Property	Description
+req.body-	Contains data sent in the body (used with POST, PUT). Requires middleware like express.json() or body-parser.
+req.params=Route parameters from the URL, e.g. /users/:id → req.params.id
+req.query=Query string parameters, e.g. ?page=2&limit=10 → req.query.page
+req.headers=All HTTP request headers. Example: req.headers['authorization']
+req.cookies=	If using cookie-parser middleware, holds cookies sent by client
+req.method=	The HTTP method (e.g., GET, POST, PUT)
+req.url=	Full URL of the request
+req.path=	Path of the request (e.g., /api/users)
+req.ip=	IP address of the client
+req.user=	Often set manually in auth middleware to attach the logged-in user's info
+req.files=	Used for file uploads (requires middleware like multer)
+req.originalUrl	Original request URL (helpful for redirects/logging)
+✅ Example Usage
+app.post('/user/:id', (req, res) => {
+  console.log('Body:', req.body);       // POST data (e.g., { name: "John" })
+  console.log('Params:', req.params);   // { id: '123' }
+  console.log('Query:', req.query);     // e.g., ?debug=true
+  console.log('Headers:', req.headers); // e.g., authorization token
+  console.log('User:', req.user);       // Set by auth middleware
+});
+
+
+ res.cookie('token',authToken,{
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });

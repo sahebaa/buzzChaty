@@ -22,10 +22,17 @@ const userSchema= new mongoose.Schema({
         type:String,
     },
     profileImg:{
-        type:String,
+        type:String,   
+    },
+    dateOfBirth:{
+        type:Date,
     },
     bio:{
         type:String
+    },
+    isVerified:{
+        type:Boolean,
+        default:false
     },
     chats:{
         type: [mongoose.Schema.Types.ObjectId],
