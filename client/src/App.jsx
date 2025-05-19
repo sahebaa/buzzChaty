@@ -7,6 +7,9 @@ import  {Routes, Route } from 'react-router-dom';
 import Login from '../src/LoginSection/LogIn'
 import Signup from './LoginSection/SignUp'
 import CompleteYourProfile from './LoginSection/CompleteYourProfile'
+import VerifyYourEmail from './LoginSection/CompleteYourProfile/VerifyYourEmail'
+import ChatDashboard from './MainChat';
+import VerifyToken from './LoginSection/VerifyToken'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -17,8 +20,10 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path='/signup/completeyourprofile' element={<CompleteYourProfile/>}/>
-            {/*<Route path="/chat" element={<ChatDashboard />} />
-            <Route path="/chat/:roomId" element={<ChatRoom />} />
+            <Route path='/signup/completeyourprofile/verify-your-email' element={<VerifyYourEmail/>}/>
+            <Route path="/all-chats" element={<ChatDashboard />} />
+            <Route path='/verify-token' element={<VerifyToken/>}/>
+            {/*<Route path="/chat/:roomId" element={<ChatRoom />} />
             <Route path="/chat/settings" element={<ChatSettings />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<AppSettings />} />

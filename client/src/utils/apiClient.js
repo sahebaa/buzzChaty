@@ -9,12 +9,12 @@ const apiClient=axios.create({
 })
 
 // Optional: Add interceptors for auth, logging, etc.
-apiClient.interceptors.response.use(
+{/*apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
       console.error('API error:', error);
       return Promise.reject(error);
     }
   );
-  
+  */}
   export default apiClient;

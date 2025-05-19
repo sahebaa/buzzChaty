@@ -65,6 +65,8 @@ const userRes = await Users.aggregate([
 ]);
 
 --------------------------------------------------------------------------------------------------------------
+##### req params in https request ######
+
 In Express (Node.js), the req (request) object represents the incoming HTTP request from the client. It contains a lot of useful information you can use to process the request.
 
 ✅ Common Properties of req (Request Object)
@@ -97,3 +99,128 @@ app.post('/user/:id', (req, res) => {
             sameSite: 'Strict',
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
+
+
+-------------------------------------------------------------------------------------------------------------------------
+###### Image uploading when input is hidden #######
+
+1.Take reference of the current input ref
+<input
+  type="file"
+  accept="image/*"
+  ref={fileInputRef}
+  onChange={handleFileChange}
+  style={{ display: "none" }}
+/>
+
+
+make call on div click
+<div onClick={handleDivClick}>
+
+inside handleDivClick make call to the fileInputref.current.click()
+
+const handleDivClick = () => {
+  fileInputRef.current.click();
+};
+
+
+inside the function make the value accessible
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const imageUrl = URL.createObjectURL(file);
+    setImageSrc(imageUrl);
+  }
+};
+
+uploading image to cluodinary
+
+✅ Step-by-Step: Upload Image to Cloudinary from React
+
+Step 1: Create a Cloudinary Account
+Go to https://cloudinary.com
+Sign up or log in.
+Once logged in, go to your Dashboard.
+Note down:
+Cloud name → needed for API endpoint
+You won't need the API key/secret for client-side upload using unsigned preset
+Step 2: Create an Unsigned Upload Preset
+In your Cloudinary dashboard, go to:
+Settings → Upload → Upload presets
+Click “Add upload preset”
+Set:
+Preset name: something like unsigned_preset
+Signing Mode: Unsigned
+Upload options: Allow images
+Save the preset.
+Step 3: Setup React Project
+In your React project, make sure you have this structure ready:
+File input (hidden)
+Div to show image preview or placeholder
+Image upload handler
+
+
+const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploading(true); // show spinner or disable UI
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // replace with your unsigned preset
+
+    try {
+      const res = await fetch("https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      setImageSrc(data.secure_url); // final image URL from Cloudinary
+    } catch (error) {
+      console.error("Upload failed:", error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+✅✅ react useState + LocalStorage 
+1: at the time of setting value to state onClick((e)=>{let val=e.target.value; setPassword(val); localStoage.setItem("passwrod":val)});
+
+at the time of checking of the values to set in usestate
+
+const [password,setPassowrd]=useState(()=>{return localStorage.getItem("password")|| ''});
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+✅✅ At the time of login user should come back to credentials
+navigate("/home", { replace: true });0
+
+
+---------------------------------------------------------------------------------------------------------------------------
+###### Better handling of the redirection of the routes #######
+
+ (
+    async function () {
+      try{
+        const response=await checkLogin(userId);
+        //redirect to chat page
+        if (response.authenticated) {
+          // Redirect to home
+          window.location.href = '/all-chats';
+      } else {
+          // Redirect to login
+          window.location.href = '/login';
+      }
+
+      }catch(error){
+        console.log(error);
+        setLoading(false);
+      }
+    }
+  )()

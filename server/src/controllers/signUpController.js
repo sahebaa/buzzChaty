@@ -12,6 +12,7 @@ console.log(saltRounds);
 
 const signIn=async(req,res)=>{
     console.log("route successfully hited")
+    console.log(req.body);
     try{
         const {name,lastName,email,password,colorCode,profileImg,bio,dateOfBirth}=req.body;
        
@@ -20,7 +21,10 @@ const signIn=async(req,res)=>{
     //console.log(user);
     
     if(user)
-        return res.status(403).json({"message":"either eamil or password wrong"});
+        return res.status(400).json(
+        {"message":"either eamil or password wrong"},
+        {"status":"fail"}
+    );
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -36,7 +40,7 @@ const signIn=async(req,res)=>{
     const savedUser=await newUser.save();
 
     if(!savedUser)
-        return res.status(500).json({"message":"Internal server error"});
+        return res.status(500).json({"message":"Internal server error"},{"status":"fail"});
 
     const token = jwt.sign(
         { id: savedUser.id, username: savedUser.email },
@@ -44,24 +48,35 @@ const signIn=async(req,res)=>{
         { expiresIn: '1h' }       // Optional: token expiration
       );
 
-      const verificationLink=`${process.env.EMAIL_URL}/:token=${token}`;
+      const verificationLink=`${process.env.EMAIL_URL}/verify-token?signIn=true&token=${token}`;
       const mailRes=await sendMail(newUser.email,verificationLink);
 
       console.log("Here is mail res",mailRes);
 
+    const userToReturn={
+          userId:savedUser._id,
+          name:savedUser.name,
+          lastName:savedUser.lastName,
+          colorCode:savedUser.colorCode,
+          profileImg:savedUser.profileImg,
+          bio:savedUser.bio,
+          email:savedUser.email,
+      }
+
       if(mailRes)
-        return res.status(200).json({"message":"User regestraion sucessful check your email"});
+        return res.status(200).json({"user":userToReturn},{"message":"User regestraion sucessful check your email for confirmation"}, {"status":"sucess"});
       else
-      return res.status(500).json({"message":"Internal server error"});
+      return res.status(500).json({"message":"Internal server error"}, {"status":"fail"});
     }catch(err){
         console.log("error occured on sign up controller",err);
-        return res.status(501).json({"message":"error occured"});
+        return res.status(501).json({"message":"error occured"}, {"status":"fail"});
     }
 
 }   
 
 
 const login=async(req,res)=>{
+    console.log("request hit on the backend",req.body);
    try{
     const {email,password}=req.body;
 
@@ -106,9 +121,13 @@ const login=async(req,res)=>{
 const verifyEmail=async(req,res)=>{
     try{
         const token=req.query.token;
+        const signIn=req.query.isSignIn;
 
         const payload=jwt.verify(token,process.env.JWT_SECRET);
         console.log("this is your payload",payload);
+
+        if(!payload)
+            return res.status(400).json({"error":"Verification link expired"});
 
         const user=await Users.findById(payload.id);
 
@@ -121,29 +140,42 @@ const verifyEmail=async(req,res)=>{
         user.isVerified=true;
         await user.save();
 
-        const authToken = jwt.sign({ id: user._id,userEmail:user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        if(signIn){
+            const authToken = jwt.sign({ id: user._id,userEmail:user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-        res.cookie('token',authToken,{
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'Strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+            res.cookie('token',authToken,{
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'Strict',
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            });
 
-        return res.status(200).json({
-            userId:user._id,
-            name:user.name,
-            lastName:user.lastName,
-            colorCode:user.colorCode,
-            profileImg:user.profileImg,
-            bio:user.bio,
-            email:user.email,
-        })
+        }
+        return res.status(201).json({"message":"User email verification sucessful"});
 
 
     }catch(err){
         return res.status(400).send('Invalid or expired verification link');
     }
+}
+
+const checkToken=async(req,res)=>{
+    console.log("here is cookie",req.cookies);
+
+    const token=req.cookies.token;
+
+    if(!token)
+        return res.status(401).json({"message":"Not authenticated"});
+
+    try{
+        const decoded=jwt.verify(token,process.env.JWT_SECRET);
+        console.log(decoded.id,req.query.id)
+        if(decoded.id===req.query.id)
+            return res.status(200).json({ authenticated: true, user: decoded });
+    }catch(err){
+        return res.status(400).json({authenticated:false});
+    }
+
 }
 
 const about=async(req,res)=>{
@@ -154,5 +186,6 @@ export {
     signIn,
     login,
     verifyEmail,
-    about
+    about,
+    checkToken
 };

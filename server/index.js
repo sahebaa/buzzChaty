@@ -5,11 +5,13 @@ import mongoose from 'mongoose';
 import addUsers from './src/controllers/addUsers.js';
 import contactRouter from './src/routes/contactRoutes.js';
 import signUpRouter from './src/routes/signUpRoutes.js';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
 dotenv.config();
 const app=express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors({
   origin: 'http://localhost:5173', // your React frontend URL
   credentials: true, // if using cookies/auth headers

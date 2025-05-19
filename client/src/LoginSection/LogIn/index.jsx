@@ -1,10 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import bannerImg from './../../assets/banner.png'
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
+import { checkLogin, loginUser } from '../../services';
+import MainChat from '../../MainChat'
 
 const index = () => {
+ 
   const navigate = useNavigate();
   const [name,setName]=useState('');
   const [lastName,setLastName]=useState('');
@@ -13,6 +17,37 @@ const index = () => {
   const [confirmPassword,setConfirmPassword]=useState('');
   const [passwordType,setPasswordType]=useState(false);
   const [eye,setEye]=useState(false);
+  const [loading,setLoading]=useState(true);
+
+  useEffect(()=>{
+    console.log("Here is value of loading ",loading);
+    const userId=localStorage.getItem('logedInUserId');
+    if(!userId){
+      setLoading(false);
+      return;
+    };
+
+  (
+    async function () {
+      try{
+        const response=await checkLogin(userId);
+        //redirect to chat page
+        if (response.authenticated) {
+          // Redirect to home
+          window.location.href = '/all-chats';
+      } else {
+          // Redirect to login
+          window.location.href = '/login';
+      }
+
+      }catch(error){
+        console.log(error);
+        setLoading(false);
+      }
+    }
+  )()
+
+  },[]);
 
   const changePasswordType=()=>{
     if(!eye){
@@ -29,8 +64,47 @@ const index = () => {
     navigate('/signup')
   }
 
+  const handleLoing=async()=>{
+    if(email.trim().length<=0)
+     return toast.error("email is required");
+
+    if(password.trim().length<=0)
+      return toast.error("password is required");
+
+    const userData={
+      email,
+      password
+    }
+  
+    try{
+      const res=await loginUser(userData);
+      console.log("Here is your cookie ",res);
+      localStorage.setItem('logedInUserId',res.userId);
+      localStorage.setItem('logedInUserName',res.name);
+      localStorage.setItem('logedInUserLastName',res.lastName)
+      localStorage.setItem('logedInUserEmail',res.email)
+      localStorage.setItem('logedInUserColorCode',res.colorCode);
+      localStorage.setItem('logedInUserProfileImg',res.profileImg);
+      localStorage.setItem('logedInUserBio',res.bio);
+      navigate('/all-chats',{replace:true});
+      
+    }catch(error)
+      {
+        console.log("error on loginß",error.response);
+        const message=error?.response?.data?.message;
+        return toast.error(message);
+      }
+  }
+
+
+  if(loading)
+    return <div>
+      we are on the loading page
+    </div>
+
   return (
     <div className='h-[100vh] w-[100%] bg-[#FFFFFF] flex items-center justify-center flex-col'>
+      <Toaster/>
       <p className='text-4xl font-bold bg-gradient-to-r from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] bg-clip-text text-transparen'>Login to your account</p>
         <div className="container shadow-xl rounded-2xl w-[70vw] flex items-center gap-[5vw]">
          <img src={bannerImg} alt="img not loaded"  className="bg-none h-[60vh] w-[40vw]" />
@@ -49,7 +123,7 @@ const index = () => {
               onChange={e=>setPassword(e.target.value)}
               className='p-[1vh] border-2 border-b-gray-800'  
               />
-              <button className='p-[0.5vh] bg-gradient-to-r from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]  cursor-pointer text-white'>SignIn</button>
+              <button className='p-[0.5vh] bg-gradient-to-r from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]  cursor-pointer text-white' onClick={handleLoing}>Login</button>
               <p>
                 Don't have an account? <span className='cursor-pointer text-blue-800' onClick={handleSignupClick}>Signin</span>
               </p>
