@@ -5,7 +5,9 @@ import Users from "../models/userModel.js";
 
 const createChat=async(req,res)=>{
     const {sender,receiver,messageContent,messageType,visibility}=req.body;
+   // console.log("create chat route hitted successfully",sender,receiver);
     try{
+      
         const senderUser = await Users.findOne({ email: sender });
         const receiverUser = await Users.findOne({ email: receiver });
         //console.log(senderUser,receiverUser);
@@ -52,6 +54,7 @@ const createChat=async(req,res)=>{
         return res.status(201).json({res:newChatRes});
 
         }catch(error){
+          console.log(error);
             return res.status(500).json({"message":"something went wrong at chatController"});
         }
 };
@@ -244,6 +247,7 @@ const deleteMessage=async(req,res)=>{
   };*/
 
   const getAllChats = async (req, res) => {
+    console.log("request for getAllChats routes");
     try {
       const { user } = req.body;
   

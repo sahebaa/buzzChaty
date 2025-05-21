@@ -19,10 +19,13 @@ const index = () => {
   const [eye,setEye]=useState(false);
   const [loading,setLoading]=useState(true);
 
+  //writing useEffect hook 
+
   useEffect(()=>{
     console.log("Here is value of loading ",loading);
-    const userId=localStorage.getItem('logedInUserId');
-    if(!userId){
+    const user=JSON.parse(localStorage.getItem('logedInUser'));
+    //console.log("value of user if",user.userId,typeof(user));
+    if(!user.userId){
       setLoading(false);
       return;
     };
@@ -30,7 +33,7 @@ const index = () => {
   (
     async function () {
       try{
-        const response=await checkLogin(userId);
+        const response=await checkLogin(user?.userId);
         //redirect to chat page
         if (response.authenticated) {
           // Redirect to home
@@ -49,6 +52,8 @@ const index = () => {
 
   },[]);
 
+  //Change password Type
+
   const changePasswordType=()=>{
     if(!eye){
       setEye(true);
@@ -58,7 +63,7 @@ const index = () => {
       setPasswordType(false);
     }
   }
-
+//
   const handleSignupClick=()=>{
     console.log("Click regestired");
     navigate('/signup')
@@ -78,14 +83,9 @@ const index = () => {
   
     try{
       const res=await loginUser(userData);
-      console.log("Here is your cookie ",res);
-      localStorage.setItem('logedInUserId',res.userId);
-      localStorage.setItem('logedInUserName',res.name);
-      localStorage.setItem('logedInUserLastName',res.lastName)
-      localStorage.setItem('logedInUserEmail',res.email)
-      localStorage.setItem('logedInUserColorCode',res.colorCode);
-      localStorage.setItem('logedInUserProfileImg',res.profileImg);
-      localStorage.setItem('logedInUserBio',res.bio);
+      console.log("Here is type of the response fro login ",typeof(res));
+      console.log(res);
+      localStorage.setItem('logedInUser',JSON.stringify(res));
       navigate('/all-chats',{replace:true});
       
     }catch(error)

@@ -119,13 +119,7 @@ const index = () => {
       localStorage.removeItem('imageSrc');
 
       const userObj=response?.data?.user;
-      localStorage.setItem('logedInUserId',userObj.userId);
-      localStorage.setItem('logedInUserName',userObj.name);
-      localStorage.setItem('logedInUserLastName',userObj.lastName)
-      localStorage.setItem('logedInUserEmail',userObj.email)
-      localStorage.setItem('logedInUserColorCode',userObj.colorCode);
-      localStorage.setItem('logedInUserProfileImg',userObj.profileImg);
-      localStorage.setItem('logedInUserBio',userObj.bio);
+      localStorage.setItem('logedInUser',JSON.stringify(userObj));
 
       navigate("/signup/completeyourprofile/verify-your-email",{replace:true});
 

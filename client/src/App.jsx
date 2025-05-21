@@ -10,6 +10,7 @@ import CompleteYourProfile from './LoginSection/CompleteYourProfile'
 import VerifyYourEmail from './LoginSection/CompleteYourProfile/VerifyYourEmail'
 import ChatDashboard from './MainChat';
 import VerifyToken from './LoginSection/VerifyToken'
+import YourProfileSection from './MainChat/ContactSection/YourProfileSection'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -23,6 +24,7 @@ function App() {
             <Route path='/signup/completeyourprofile/verify-your-email' element={<VerifyYourEmail/>}/>
             <Route path="/all-chats" element={<ChatDashboard />} />
             <Route path='/verify-token' element={<VerifyToken/>}/>
+            <Route path='/your-profile-section' element={<YourProfileSection/>}/>
             {/*<Route path="/chat/:roomId" element={<ChatRoom />} />
             <Route path="/chat/settings" element={<ChatSettings />} />
             <Route path="/profile" element={<Profile />} />

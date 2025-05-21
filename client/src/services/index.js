@@ -48,4 +48,23 @@ export const checkUserEmailVerification=async(token,signIn)=>{
   return response;
 }
 
+export const getAllChatsToPopulate = async (email) => {
+  try {
+    const response = await apiClient.post(
+      '/chat/getAllchats',
+      { user: email },
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response;
+  } catch (err) {
+    console.error("Error in getAllChatsToPopulate:", err);
+    return null; // or throw if you want to handle it higher up
+  }
+};
+
 ///api/userSignUp/login
