@@ -11,9 +11,9 @@ const index = () => {
   const navigate = useNavigate();
   const [addIcon, setAddIcon] = useState("false");
   const[bgColor,setBgColor]=useState(()=>{return localStorage.getItem("bgColor") ||  "#EDEADE"});
-  const[year,setYear]=useState(()=>{return localStorage.getItem("signInPageYear") || ""});
-  const[month,setMonth]=useState(()=>{return localStorage.getItem("signInPageMonth") || ""});  
-  const[date,setDate]=useState(()=>{return localStorage.getItem("signInPageDate") || ''});
+  const[year,setYear]=useState(()=>{return localStorage.getItem("signInPageYear") || "2025"});
+  const[month,setMonth]=useState(()=>{return localStorage.getItem("signInPageMonth") || "1"});  
+  const[date,setDate]=useState(()=>{return localStorage.getItem("signInPageDate") || '1'});
   const [bio,setBio]=useState(()=>{return localStorage.getItem('bio') || ""});
   const[imageSrc,setImageSrc]=useState(()=>{return localStorage.getItem("imageSrc") || ""});
   const [submitButtonLoading,setSubmitLoading]=useState(false);

@@ -3,10 +3,10 @@ import { create } from "zustand";
 const useUserChattingInfo=create((set)=>({
     isUserChatting:false,
     userInfo:null,
+    
+    setChattingStatus:(status)=>set({isUserChatting:status}),
 
-    setChattingStatus:(status)=>({isUserChatting:status}),
-
-    setUserInfo:((userInfo)=>({userInfo})),
+    setUserInfo:((userInfo)=>set({userInfo})),
 
     updateUserInfo:(updatedFeild)=>
         set((state) => ({
@@ -14,7 +14,8 @@ const useUserChattingInfo=create((set)=>({
         }),
     ),
 
-    clearUserInfo:({userInfo:null}),
-    
+    clearUserInfo:set({userInfo:null}),
 
 }))
+
+export default useUserChattingInfo;

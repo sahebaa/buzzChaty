@@ -8,9 +8,11 @@ import { useNavigate } from 'react-router-dom';
 import useUserStore from "../../store/userInfoStore";
 import { getAllChatsToPopulate } from "../../services";
 import ChatLoadingSkleton from './ChatSkeleton/';
+import useUserChattingInfo from "../../store/userChattingInfo";
 
 const index = () => {
   const navigate = useNavigate();
+  const {isUserChatting,setChattingStatus,setUserInfo}=useUserChattingInfo();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentIdx, setCurrentIdx] = useState("");
@@ -45,12 +47,14 @@ const index = () => {
           messageType:res.lastMessage.messageType,
           messageContent:res.lastMessage.messageContent,
           otherUserName:res.otherUser.name,
+          otherUserlastName:res.otherUser.lastName,
           otherUserEmail:res.otherUser.email,
           profileImg:res.otherUser.profileImg,
           colorCode:res.otherUser.colorCode
         }
       })
       console.log("here are your contacts section",contacts);
+      setHasUserFetched(true);
       setContactSection(contacts);
       if(contacts){
         setHasUserFetched(true);
@@ -60,17 +64,29 @@ const index = () => {
     ()
   },[user,hasUserFetched]);
 
+
+  const handleChatClick = (chat,idx) => {
+    console.log("cliked on chat");
+    console.log("Whern u click u are getting this ",chat);
+    setCurrentIdx(idx);
+    const {otherUserName,otherUserlastName,otherUserEmail,profileImg}=chat
+    const newUser={
+      otherUserName,
+      otherUserlastName,
+      otherUserEmail,
+      profileImg
+    }
+    setChattingStatus(true);
+    setUserInfo(newUser);
+    console.log("Value of is user chattingh",isUserChatting);
+  };
+
   const handleYourProfileClick=()=>{
     console.log("Profile click button clicked");
     navigate('/your-profile-section')
   }
 
-  const handleChatClick = (idx, e) => {
-    setCurrentIdx(idx);
-    console.log("clicked on the chat",e.target.value);
-  };
-
-  const getcharacters = (userId, userEmail) => {
+  const getcharacters = (userId,userLastName, userEmail) => {
     if (!userId) return userEmail[0].toUpperCase();
 
     let newStr = "";
@@ -82,10 +98,15 @@ const index = () => {
         break;
       }
     }
+    newStr+=userLastName.charAt(0);
     //console.log(newStr);
     return newStr.toUpperCase();
   };
 
+  /*if(hasUserFetched && !contactSection?.length){
+    return <div>You dont have conttacts to chat </div>
+  }
+  */
   if(!hasUserFetched)
     return <ChatLoadingSkleton/>
 
@@ -139,16 +160,16 @@ const index = () => {
         {contactSection?.map((chat, idx) => (
           <div
             key={idx}
-            onClick={() => handleChatClick(idx, event)}
+            onClick={() => handleChatClick(chat,idx)}
             className={`${idx == currentIdx ? "bg-[#FFFADA]" : null} `}
           >
             {
               <div className="chat-section p-1 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#FFFADA] active:bg-[#FFFADA] mr-[2vw]">
                 <div className="h-[40px] w-[40px] bg-yellow-300 rounded-full text-black flex items-center justify-center ml-2 font-semibold">
-                  {getcharacters(chat.otherUserName, chat.otherUserEmail)}
+                  {getcharacters(chat.otherUserName,chat.otherUserlastName,chat.otherUserEmail)}
                 </div>
                 <div className="contect flex-1 truncate line-clamp-2 overflow-hidden whitespace-nowrap border-b-1 border-indigo-500">
-                  <p className="font-semibold"> {chat.otherUserName || chat.otherUserEmail}</p>
+                  <p className="font-semibold"> {chat.otherUserName || chat.otherUserEmail} {(chat?.otherUserName)?chat.otherUserlastName:null}</p>
                   <p className="truncate w-full text-[0.9rem]">
                     saheb:{chat.messageContent}
                   </p>
@@ -157,7 +178,7 @@ const index = () => {
             }
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

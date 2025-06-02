@@ -25,7 +25,7 @@ const index = () => {
     console.log("Here is value of loading ",loading);
     const user=JSON.parse(localStorage.getItem('logedInUser'));
     //console.log("value of user if",user.userId,typeof(user));
-    if(!user.userId){
+    if(!user?.userId){
       setLoading(false);
       return;
     };

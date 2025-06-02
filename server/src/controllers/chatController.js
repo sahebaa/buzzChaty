@@ -346,6 +346,7 @@ const deleteMessage=async(req,res)=>{
                 otherUser: {
                   _id: "$otherUserInfo._id",
                   name: "$otherUserInfo.name",
+                  lastName:"$otherUserInfo.lastName",
                   email: "$otherUserInfo.email",
                   profileImg: "$otherUserInfo.profileImg",
                   colorCode: "$otherUserInfo.colorCode"

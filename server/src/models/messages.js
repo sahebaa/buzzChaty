@@ -17,7 +17,13 @@ const messageSchema=new mongoose.Schema({
         type:String,
         enum:['both','none','sender','receiver']
     },
-    
+    seen:{
+        type:Boolean,
+        default:false
+    },
+    seenTime:{
+        type:Date,
+    },
     timestamp: { type: Date, default: Date.now }
 })
 
